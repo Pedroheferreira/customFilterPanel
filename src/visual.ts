@@ -286,12 +286,49 @@ export class Visual implements IVisual {
         }
     }
 
-    private clearFilters(): void {
-        this.selected.clear();
+  private clearFilters(): void {
+        // Limpa apenas os grupos com multiSelect = true
         this.groups.forEach(g => {
-            g.items.forEach(i => i.selected = false);
+            if (g.multiSelect) {
+                // Remove seleções do mapa
+                g.items.forEach(i => {
+                    if (i.selected) {
+                        this.selected.delete(`${g.propName}||${i.label}`);
+                        i.selected = false;
+                    }
+                });
+
+                // Remove o filtro no PBI
+                this.host.applyJsonFilter(
+                    null,
+                    "general",
+                    "filter",
+                    FilterAction.remove
+                );
+            }
+            // single select: mantém como está
         });
-        this.host.applyJsonFilter(null, "general", "filter", FilterAction.remove);
+
+        // Reaplicar filtros dos grupos single que ainda têm seleção
+        const singleGroups = this.groups.filter(g => !g.multiSelect && g.items.some(i => i.selected));
+
+        if (singleGroups.length > 0) {
+            const filters = singleGroups.map(group => ({
+                $schema:    "http://powerbi.com/product/schema#basic",
+                filterType: 1,
+                target:     { table: group.table, column: group.column },
+                operator:   "In",
+                values:     group.items.filter(i => i.selected).map(i => i.rawValue),
+            }));
+
+            this.host.applyJsonFilter(
+                filters as unknown as powerbi.IFilter,
+                "general",
+                "filter",
+                FilterAction.merge
+            );
+        }
+
         this.renderPanel();
         this.renderTrigger();
     }
