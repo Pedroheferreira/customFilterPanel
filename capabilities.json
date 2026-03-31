@@ -1,5 +1,8 @@
 {
   "privileges": [],
+  "supportsMultiVisualSelection": true,
+  "supportsSynchronizingFilterState": true,
+  "suppressDefaultTitle": true,
   "dataRoles": [
     { "displayName": "Campo 1",  "name": "field1",  "kind": "Grouping" },
     { "displayName": "Campo 2",  "name": "field2",  "kind": "Grouping" },
