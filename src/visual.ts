@@ -585,18 +585,6 @@ private applyFilters(): void {
         groupTitle.textContent = group.name;
         groupTitle.style.color = s.groupTitleColor;
 
-        // ── Badge indicando tipo de seleção ──
-        const selTypeBadge = document.createElement("span");
-        selTypeBadge.className = "fp-sel-type";
-        selTypeBadge.textContent = group.multiSelect ? "multi" : "único";
-        selTypeBadge.style.cssText = `
-            font-size:9px;font-weight:600;
-            padding:1px 5px;border-radius:8px;
-            background:${group.multiSelect ? "#e8f5e9" : "#fff3e0"};
-            color:${group.multiSelect ? "#2e7d32" : "#e65100"};
-            text-transform:capitalize;letter-spacing:.04em;
-        `;
-
         const selCount = group.items.filter(i => i.selected).length;
         if (selCount > 0) {
             const dot = document.createElement("span");
@@ -605,11 +593,24 @@ private applyFilters(): void {
             groupTitle.appendChild(dot);
         }
 
+        // ── Badge multi/único ── 
+        const selTypeBadge = document.createElement("span");
+        selTypeBadge.className = "fp-sel-type";
+        selTypeBadge.textContent = group.multiSelect ? "multi" : "único";
+        selTypeBadge.style.cssText = `
+            font-size:9px;font-weight:600;
+            padding:1px 5px;border-radius:8px;
+            background:${group.multiSelect ? "#e8f5e9" : "#fff3e0"};
+            color:${group.multiSelect ? "#2e7d32" : "#e65100"};
+            text-transform:uppercase;letter-spacing:.04em;
+        `;
+
         const toggle = document.createElement("span");
         toggle.className = "fp-toggle";
         toggle.textContent = group.isExpanded ? "−" : "+";
 
-        groupHeader.append(groupTitle, toggle);
+        // ── Header: título | badge | toggle ──
+        groupHeader.append(groupTitle, selTypeBadge, toggle);
 
         const itemList = document.createElement("div");
         itemList.className = "fp-item-list" + (group.isExpanded ? "" : " collapsed");
