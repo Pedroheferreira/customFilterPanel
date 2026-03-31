@@ -11,6 +11,13 @@ import FilterAction             = powerbi.FilterAction;
 import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
 import { FilterSlicerSettingsModel }  from "./settings";
 
+interface FieldItem {
+    label:      string;
+    rawValue:   powerbi.PrimitiveValue | null;
+    selected:   boolean;
+    rowIndices: number[];   // ← NOVO
+}
+
 interface FieldGroup {
     name:        string;
     table:       string;
@@ -18,13 +25,8 @@ interface FieldGroup {
     propName:    string;
     items:       FieldItem[];
     isExpanded:  boolean;
-    multiSelect: boolean;   // ← NOVO: por campo
-}
-
-interface FieldItem {
-    label:    string;
-    rawValue: powerbi.PrimitiveValue | null;
-    selected: boolean;
+    multiSelect: boolean;
+    rowIndexMap: Map<string, number[]>;   // ← NOVO
 }
 
 interface Settings {
@@ -192,26 +194,40 @@ export class Visual implements IVisual {
             const name = cat.source.displayName ?? `Campo ${idx + 1}`;
             const qn   = cat.source.queryName   ?? "";
             const { table, column } = this.parseQN(qn);
-            const propName = `filter${idx + 1}`;
 
-            const seen  = new Set<string>();
+            let roleNum = idx + 1;
+            const roles = Object.keys(cat.source.roles ?? {});
+            if (roles.length > 0) {
+                const m = roles[0].match(/^field(\d+)$/);
+                if (m) roleNum = parseInt(m[1], 10);
+            }
+            const propName = `filter${roleNum}`;
+
+            // ── Guarda o índice de cada valor para cross-filter ──
+            const seen   = new Set<string>();
             const items: FieldItem[] = [];
-            (cat.values ?? []).forEach(v => {
+            const rowIndexMap = new Map<string, number[]>(); // label → índices das linhas
+
+            (cat.values ?? []).forEach((v, rowIdx) => {
                 const label = v != null ? String(v) : "(Em branco)";
+                if (!rowIndexMap.has(label)) rowIndexMap.set(label, []);
+                rowIndexMap.get(label)!.push(rowIdx);
+
                 if (seen.has(label)) return;
                 seen.add(label);
                 items.push({
                     label,
                     rawValue: v as powerbi.PrimitiveValue | null,
                     selected: this.selected.has(`${propName}||${label}`),
+                    rowIndices: rowIndexMap.get(label)!, // ← NOVO
                 });
             });
             items.sort((a, b) => a.label.localeCompare(b.label));
 
             const isExpanded  = this.expandedState.get(name) ?? (idx === 0);
-            const multiSelect = this.getFieldMultiSelect(idx); // ← NOVO
+            const multiSelect = this.getFieldMultiSelect(idx);
 
-            return { name, table, column, propName, items, isExpanded, multiSelect };
+            return { name, table, column, propName, items, isExpanded, multiSelect, rowIndexMap };
         });
     }
 
@@ -286,7 +302,7 @@ export class Visual implements IVisual {
         }
     }
 
-  private clearFilters(): void {
+       private clearFilters(): void {
         // Limpa apenas os grupos com multiSelect = true
         this.groups.forEach(g => {
             if (g.multiSelect) {
@@ -593,7 +609,7 @@ private applyFilters(): void {
         toggle.className = "fp-toggle";
         toggle.textContent = group.isExpanded ? "−" : "+";
 
-        groupHeader.append(groupTitle, selTypeBadge, toggle);
+        groupHeader.append(groupTitle, toggle);
 
         const itemList = document.createElement("div");
         itemList.className = "fp-item-list" + (group.isExpanded ? "" : " collapsed");
@@ -605,14 +621,51 @@ private applyFilters(): void {
             toggle.textContent = group.isExpanded ? "−" : "+";
         });
 
-        group.items.forEach(item => {
-            const itemEl = document.createElement("div");
-            itemEl.className = "fp-item" + (item.selected ? " selected" : "");
-            if (item.selected) itemEl.style.background = s.itemSelectedBg;
+        // ── Cross-filter: calcula linhas ativas dos outros grupos ──
+        const activeRows = this.getActiveRowIndices(group.propName);
 
-            // ── Checkbox ou radio dependendo do multiSelect do grupo ──
+        // ── Ordena: disponíveis primeiro, indisponíveis no final ──
+        const sortedItems = [...group.items].sort((a, b) => {
+            const aAvailable = activeRows === null || (a.rowIndices ?? []).some(r => activeRows!.has(r));
+            const bAvailable = activeRows === null || (b.rowIndices ?? []).some(r => activeRows!.has(r));
+
+            if (aAvailable && !bAvailable) return -1;  // a vem antes
+            if (!aAvailable && bAvailable) return 1;   // b vem antes
+
+            // Dentro do mesmo grupo (ambos disponíveis ou ambos indisponíveis)
+            // mantém ordem alfabética
+            return a.label.localeCompare(b.label);
+        });
+
+        // ── Separador visual entre disponíveis e indisponíveis ──
+        let separatorAdded = false;
+
+        sortedItems.forEach(item => {
+            const isAvailable = activeRows === null ||
+                (item.rowIndices ?? []).some(r => activeRows!.has(r));
+
+            // Adiciona linha separadora antes do primeiro item indisponível
+            if (!isAvailable && !separatorAdded && activeRows !== null) {
+                separatorAdded = true;
+                const separator = document.createElement("div");
+                separator.style.cssText = `
+                    height:1px;
+                    background:#e8eaed;
+                    margin:4px 4px 6px;
+                `;
+                itemList.appendChild(separator);
+            }
+
+            const itemEl = document.createElement("div");
+            itemEl.className = "fp-item" +
+                (item.selected  ? " selected"    : "") +
+                (!isAvailable   ? " fp-item--dim" : "");
+
+            if (item.selected)  itemEl.style.background = s.itemSelectedBg;
+            if (!isAvailable)   itemEl.style.opacity    = "0.35";
+
             const cb = document.createElement("span");
-            cb.className = group.multiSelect ? "fp-cb" : "fp-rb"; // cb=checkbox, rb=radio
+            cb.className = group.multiSelect ? "fp-cb" : "fp-rb";
             this.renderCb(cb, item.selected, s.accentColor, group.multiSelect);
 
             const lbl = document.createElement("span");
@@ -623,7 +676,7 @@ private applyFilters(): void {
             itemEl.append(cb, lbl);
 
             itemEl.addEventListener("mouseenter", () => {
-                if (!item.selected) itemEl.style.background = s.itemHoverBg;
+                if (!item.selected && isAvailable) itemEl.style.background = s.itemHoverBg;
             });
             itemEl.addEventListener("mouseleave", () => {
                 itemEl.style.background = item.selected ? s.itemSelectedBg : "";
@@ -632,7 +685,9 @@ private applyFilters(): void {
             itemEl.addEventListener("click", (e) => {
                 e.stopPropagation();
 
-                // ── Single select: desmarca todos do grupo ──
+                // Bloqueia clique em itens indisponíveis
+                if (!isAvailable) return;
+
                 if (!group.multiSelect) {
                     group.items.forEach(i => {
                         if (i !== item && i.selected) {
@@ -646,6 +701,8 @@ private applyFilters(): void {
                         const cbEl = el.querySelector<HTMLElement>(".fp-cb, .fp-rb");
                         if (cbEl) this.renderCb(cbEl, false, s.accentColor, group.multiSelect);
                     });
+
+                    // Single: se clicar no já selecionado, desmarca
 
                     // Single: se clicar no já selecionado, desmarca
                     item.selected = !item.selected;
@@ -668,6 +725,11 @@ private applyFilters(): void {
 
                 this.renderCb(cb, item.selected, s.accentColor, group.multiSelect);
 
+                // Re-renderiza o painel para atualizar cross-filter dos outros grupos
+                this.renderPanel();
+                this.positionPanel();
+
+                // Atualiza badge
                 const badge = this.triggerEl.querySelector<HTMLElement>(".fp-badge");
                 if (badge) {
                     badge.textContent = String(this.selected.size);
@@ -683,6 +745,37 @@ private applyFilters(): void {
     }
 
     // ─── RENDER CHECKBOX ─────────────────────────────────────────────────────
+
+    // Retorna um Set com os índices de linha ativos segundo as seleções
+    // nos OUTROS grupos; retorna null quando não há restrição (nenhum outro grupo selecionado).
+    private getActiveRowIndices(currentPropName: string): Set<number> | null {
+        // Grupos diferentes do atual que possuem seleção
+        const selGroups = this.groups.filter(g => g.propName !== currentPropName && g.items.some(i => i.selected));
+        if (selGroups.length === 0) return null;
+
+        let active: Set<number> | null = null;
+
+        for (const g of selGroups) {
+            // Linhas ativas para este grupo (união das linhas dos itens selecionados)
+            const rowsForGroup = new Set<number>();
+            for (const it of g.items) {
+                if (!it.selected) continue;
+                (it.rowIndices ?? []).forEach(r => rowsForGroup.add(r));
+            }
+
+            if (active === null) {
+                active = rowsForGroup;
+            } else {
+                // Interseção com o conjunto acumulado
+                active = new Set<number>([...active].filter(x => rowsForGroup.has(x)));
+            }
+
+            // Se a interseção ficar vazia, não há linhas ativas
+            if (active.size === 0) return active;
+        }
+
+        return active ?? null;
+    }
 
     // ── Checkbox (multi) ou Radio (single) ──
     private renderCb(el: HTMLElement, checked: boolean, color: string, isMulti: boolean = true): void {
