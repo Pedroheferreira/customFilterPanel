@@ -1,0 +1,35 @@
+import powerbi from "powerbi-visuals-api";
+import IVisual = powerbi.extensibility.visual.IVisual;
+import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
+import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
+export declare class Visual implements IVisual {
+    private host;
+    private rootEl;
+    private triggerEl;
+    private panelEl;
+    private formattingSettings;
+    private formattingSettingsService;
+    private groups;
+    private panelOpen;
+    private expandedState;
+    private selected;
+    private outsideClickHandler;
+    constructor(options: VisualConstructorOptions);
+    update(options: VisualUpdateOptions): void;
+    getFormattingModel(): powerbi.visuals.FormattingModel;
+    private getSettings;
+    private getFieldMultiSelect;
+    private parseQN;
+    private buildGroups;
+    private syncFromJsonFilters;
+    private openPanel;
+    private closePanel;
+    private clearFilters;
+    private applyFilters;
+    private positionPanel;
+    private renderTrigger;
+    private renderPanel;
+    private buildGroupEl;
+    private renderCb;
+    private injectStyles;
+}

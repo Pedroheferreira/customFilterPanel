@@ -1,0 +1,88 @@
+/*!**************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ../../../../AppData/Roaming/npm/node_modules/powerbi-visuals-tools/node_modules/css-loader/dist/cjs.js!../../../../AppData/Roaming/npm/node_modules/powerbi-visuals-tools/node_modules/less-loader/dist/cjs.js??ruleSet[1].rules[3].use[2]!./style/visual.less ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************/
+.multi-filter-panel {
+  width: 280px;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  color: white;
+  font-family: 'Segoe UI', sans-serif;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+.multi-filter-panel .mf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+.multi-filter-panel .mf-header .mf-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+.multi-filter-panel .mf-header .mf-clear {
+  font-size: 12px;
+  color: #ffd700;
+  cursor: pointer;
+}
+.multi-filter-panel .mf-header .mf-clear:hover {
+  text-decoration: underline;
+}
+.multi-filter-panel .mf-dropdowns {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.multi-filter-panel .mf-dropdown-wrapper .mf-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+.multi-filter-panel .mf-dropdown-wrapper .mf-select-container {
+  position: relative;
+}
+.multi-filter-panel .mf-dropdown-wrapper .mf-select-container .mf-select-btn {
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+.multi-filter-panel .mf-dropdown-wrapper .mf-select-container .mf-select-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+.multi-filter-panel .mf-dropdown-wrapper .mf-select-container .mf-select-btn .mf-arrow {
+  transition: transform 0.3s ease;
+}
+.multi-filter-panel .mf-dropdown-wrapper .mf-select-container .mf-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+.multi-filter-panel .mf-dropdown-wrapper .mf-select-container .mf-options .mf-option {
+  padding: 12px 16px;
+  cursor: pointer;
+  color: #333;
+  transition: background 0.2s;
+}
+.multi-filter-panel .mf-dropdown-wrapper .mf-select-container .mf-options .mf-option:hover {
+  background: #f0f0f0;
+}
+/*# sourceMappingURL=visual.css.map */

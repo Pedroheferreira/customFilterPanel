@@ -1,0 +1,26 @@
+{
+    "visual": {
+        "name": "Custom Filter Panel",
+        "displayName": "Custom Filter Panel",
+        "guid": "customFilterPanel676DCC9200DE40D78C8BEC3A6025C81C",
+        "visualClassName": "Visual",
+        "version": "7.0.0.0",
+        "description": "Visual de filtro personalizado",
+        "supportUrl": "www.linkedin.com/in/pedro-henrique-da-silva-11b344150",
+        "gitHubUrl": "https://github.com/Pedroheferreira/text/blob/main/visual.ts",
+        "supportsFilters": true
+    },
+    "apiVersion": "5.3.0",
+    "author": {
+        "name": "Pedro Silva",
+        "email": "Pedro.Silva@telefonica.com"
+    },
+    "assets": {
+        "icon": "assets/icon.png"
+    },
+    "externalJS": [],
+    "style": "style/visual.less",
+    "capabilities": "capabilities.json",
+    "dependencies": null,
+    "stringResources": []
+}

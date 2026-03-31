@@ -1,0 +1,111 @@
+{
+  "privileges": [],
+  "dataRoles": [
+    { "displayName": "Campo 1",  "name": "field1",  "kind": "Grouping" },
+    { "displayName": "Campo 2",  "name": "field2",  "kind": "Grouping" },
+    { "displayName": "Campo 3",  "name": "field3",  "kind": "Grouping" },
+    { "displayName": "Campo 4",  "name": "field4",  "kind": "Grouping" },
+    { "displayName": "Campo 5",  "name": "field5",  "kind": "Grouping" },
+    { "displayName": "Campo 6",  "name": "field6",  "kind": "Grouping" },
+    { "displayName": "Campo 7",  "name": "field7",  "kind": "Grouping" },
+    { "displayName": "Campo 8",  "name": "field8",  "kind": "Grouping" },
+    { "displayName": "Campo 9",  "name": "field9",  "kind": "Grouping" },
+    { "displayName": "Campo 10", "name": "field10", "kind": "Grouping" }
+  ],
+  "dataViewMappings": [
+    {
+      "conditions": [
+        {
+          "field1":  { "max": 1 }, "field2":  { "max": 1 }, "field3":  { "max": 1 },
+          "field4":  { "max": 1 }, "field5":  { "max": 1 }, "field6":  { "max": 1 },
+          "field7":  { "max": 1 }, "field8":  { "max": 1 }, "field9":  { "max": 1 },
+          "field10": { "max": 1 }
+        }
+      ],
+      "categorical": {
+        "categories": {
+          "select": [
+            { "for": { "in": "field1"  } },
+            { "for": { "in": "field2"  } },
+            { "for": { "in": "field3"  } },
+            { "for": { "in": "field4"  } },
+            { "for": { "in": "field5"  } },
+            { "for": { "in": "field6"  } },
+            { "for": { "in": "field7"  } },
+            { "for": { "in": "field8"  } },
+            { "for": { "in": "field9"  } },
+            { "for": { "in": "field10" } }
+          ],
+          "dataReductionAlgorithm": { "top": { "count": 30000 } }
+        }
+      }
+    }
+  ],
+  "objects": {
+    "triggerBtn": {
+      "displayName": "Botão Filtrar",
+      "properties": {
+        "label":        { "displayName": "Texto do botão",           "type": { "text": true } },
+        "bgColor":      { "displayName": "Cor de fundo",             "type": { "fill": { "solid": { "color": true } } } },
+        "textColor":    { "displayName": "Cor do texto",             "type": { "fill": { "solid": { "color": true } } } },
+        "borderColor":  { "displayName": "Cor da borda",             "type": { "fill": { "solid": { "color": true } } } },
+        "borderRadius": { "displayName": "Arredondamento (px)",      "type": { "integer": true } },
+        "alignment": {
+          "displayName": "Alinhamento",
+          "type": {
+            "enumeration": [
+              { "value": "flex-start", "displayName": "Esquerda" },
+              { "value": "center",     "displayName": "Centro"   },
+              { "value": "flex-end",   "displayName": "Direita"  }
+            ]
+          }
+        }
+      }
+    },
+    "panel": {
+      "displayName": "Painel de Filtros",
+      "properties": {
+        "title":           { "displayName": "Título do painel",           "type": { "text": true } },
+        "bgColor":         { "displayName": "Cor de fundo",               "type": { "fill": { "solid": { "color": true } } } },
+        "headerBgColor":   { "displayName": "Cor de fundo do cabeçalho",  "type": { "fill": { "solid": { "color": true } } } },
+        "headerTextColor": { "displayName": "Cor do texto do cabeçalho",  "type": { "fill": { "solid": { "color": true } } } },
+        "showSearch":      { "displayName": "Mostrar busca",              "type": { "bool": true } }
+      }
+    },
+    "groups": {
+      "displayName": "Grupos / Categorias",
+      "properties": {
+        "titleColor":     { "displayName": "Cor do título do grupo",        "type": { "fill": { "solid": { "color": true } } } },
+        "itemTextColor":  { "displayName": "Cor dos itens",                 "type": { "fill": { "solid": { "color": true } } } },
+        "itemHoverBg":    { "displayName": "Cor de fundo ao passar mouse",  "type": { "fill": { "solid": { "color": true } } } },
+        "itemSelectedBg": { "displayName": "Cor de fundo selecionado",      "type": { "fill": { "solid": { "color": true } } } }
+      }
+    },
+    "checkbox": {
+      "displayName": "Checkbox",
+      "properties": {
+        "checkedColor": { "displayName": "Cor quando marcado", "type": { "fill": { "solid": { "color": true } } } },
+        "multiSelect":  { "displayName": "Multi-seleção",      "type": { "bool": true } }
+      }
+    },
+    "general": {
+      "properties": {
+        "filter": {"type": { "filter": {}}}
+      }
+    },
+    "fieldConfig": {
+      "properties": {
+        "field0multiSelect":  { "type": { "bool": true } },
+        "field1multiSelect":  { "type": { "bool": true } },
+        "field2multiSelect":  { "type": { "bool": true } },
+        "field3multiSelect":  { "type": { "bool": true } },
+        "field4multiSelect":  { "type": { "bool": true } },
+        "field5multiSelect":  { "type": { "bool": true } },
+        "field6multiSelect":  { "type": { "bool": true } },
+        "field7multiSelect":  { "type": { "bool": true } },
+        "field8multiSelect":  { "type": { "bool": true } },
+        "field9multiSelect":  { "type": { "bool": true } }
+      }
+    }
+  }
+}
