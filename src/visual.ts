@@ -26,7 +26,8 @@ interface FieldGroup {
     items:       FieldItem[];
     isExpanded:  boolean;
     multiSelect: boolean;
-    rowIndexMap: Map<string, number[]>;   // ← NOVO
+    sortOrder:   string;          // ← NOVO: "az" | "za" | "selected" | "original"
+    rowIndexMap: Map<string, number[]>;
 }
 
 interface Settings {
@@ -170,6 +171,17 @@ export class Visual implements IVisual {
         return true;
     }
 
+    // ─── Lê sortOrder de cada campo individualmente ──
+    private getFieldSortOrder(idx: number): string {
+        const f = this.formattingSettings;
+        if (!f?.fieldConfig) return "az";
+
+        const key = `field${idx}sortOrder` as keyof typeof f.fieldConfig;
+        const val = f.fieldConfig[key] as any;
+        if (val?.value?.value) return String(val.value.value);
+        return "az";
+    }
+
     // ─── PARSE QUERYNAME ─────────────────────────────────────────────────────
 
     private parseQN(qn: string): { table: string; column: string } {
@@ -226,8 +238,9 @@ export class Visual implements IVisual {
 
             const isExpanded  = this.expandedState.get(name) ?? (idx === 0);
             const multiSelect = this.getFieldMultiSelect(idx);
+            const sortOrder   = this.getFieldSortOrder(idx);   // ← NOVO
 
-            return { name, table, column, propName, items, isExpanded, multiSelect, rowIndexMap };
+            return { name, table, column, propName, items, isExpanded, multiSelect, sortOrder, rowIndexMap };
         });
     }
 
@@ -625,17 +638,31 @@ private applyFilters(): void {
         // ── Cross-filter: calcula linhas ativas dos outros grupos ──
         const activeRows = this.getActiveRowIndices(group.propName);
 
-        // ── Ordena: disponíveis primeiro, indisponíveis no final ──
+        // ── Ordena itens conforme configuração do campo ──
         const sortedItems = [...group.items].sort((a, b) => {
-            const aAvailable = activeRows === null || (a.rowIndices ?? []).some(r => activeRows!.has(r));
-            const bAvailable = activeRows === null || (b.rowIndices ?? []).some(r => activeRows!.has(r));
+            const aAvail = activeRows === null || (a.rowIndices ?? []).some(r => activeRows!.has(r));
+            const bAvail = activeRows === null || (b.rowIndices ?? []).some(r => activeRows!.has(r));
 
-            if (aAvailable && !bAvailable) return -1;  // a vem antes
-            if (!aAvailable && bAvailable) return 1;   // b vem antes
+            // Disponíveis sempre antes dos indisponíveis (cross-filter)
+            if (aAvail && !bAvail) return -1;
+            if (!aAvail && bAvail) return 1;
 
-            // Dentro do mesmo grupo (ambos disponíveis ou ambos indisponíveis)
-            // mantém ordem alfabética
-            return a.label.localeCompare(b.label);
+            // Dentro do mesmo grupo aplica a ordenação escolhida
+            switch (group.sortOrder) {
+                case "za":
+                    return b.label.localeCompare(a.label);
+
+                case "selected":
+                    if (a.selected && !b.selected) return -1;
+                    if (!a.selected && b.selected) return 1;
+                    return a.label.localeCompare(b.label);
+
+                case "original":
+                    return 0;
+
+                default: // "az"
+                    return a.label.localeCompare(b.label);
+            }
         });
 
         // ── Separador visual entre disponíveis e indisponíveis ──
