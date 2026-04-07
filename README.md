@@ -5,6 +5,9 @@ A custom Power BI visual that provides a clean, web-style filter panel with mult
 ![pbiviz](https://img.shields.io/badge/pbiviz-7.x-green?style=flat)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat&logo=typescript&logoColor=white)
 -----
+*Developed by Pedro Silva — Telefonica*
+*Pedro Silva — Pedrof.Silva@telefonica.com /  pe123he@gmail.com | +5511934114041
+-----
 ## ✨ Features
 - **≡ Filtrar button** — compact trigger button that opens the filter panel
 - **Up to 5 dynamic field slots** — connect any text/category column from your data
