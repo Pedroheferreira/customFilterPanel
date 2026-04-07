@@ -150,4 +150,4 @@ filter-slicer-visual/
 MIT License — feel free to use, modify, and distribute.
 -----
 *Developed by Pedro Silva — Telefonica*
-*Pedro Silva — TPedrof.Silva@telefonica.com /  pe123he@gmail.com | +5511934114041
+*Pedro Silva — Pedrof.Silva@telefonica.com /  pe123he@gmail.com | +5511934114041
