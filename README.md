@@ -1,7 +1,7 @@
 # 🎛️ Custom Filter Panel— Custom Visual for Power BI
 A custom Power BI visual that provides a clean, web-style filter panel with multi-field support, accordion groups, search, and full color customization via the Format Pane.
 ![Power BI](https://img.shields.io/badge/Power%20BI-Custom%20Visual-F2C811?style=flat&logo=powerbi&logoColor=black)
-![API](https://img.shields.io/badge/API-5.9.0-blue?style=flat)
+![API](https://img.shields.io/badge/API-5.10.0-blue?style=flat)
 ![pbiviz](https://img.shields.io/badge/pbiviz-7.x-green?style=flat)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat&logo=typescript&logoColor=white)
 -----
@@ -150,3 +150,4 @@ filter-slicer-visual/
 MIT License — feel free to use, modify, and distribute.
 -----
 *Developed by Pedro Silva — Telefonica*
+*Pedro Silva — TPedrof.Silva@telefonica.com /  pe123he@gmail.com | +5511934114041
