@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Privacy Policy – Custom Filter Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+   :root {
+     --bg: #f7f6f2;
+     --surface: #ffffff;
+     --ink: #1a1a18;
+     --muted: #6b6b63;
+     --accent: #1a56db;
+     --border: #e2e1da;
+     --tag-bg: #eaf0fd;
+     --tag-text: #1a56db;
+   }
+```
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+ background: var(--bg);
+ color: var(--ink);
+ font-family: 'DM Sans', sans-serif;
+ font-weight: 300;
+ line-height: 1.75;
+ font-size: 16px;
+}
+/* ── Header ── */
+header {
+ background: var(--surface);
+ border-bottom: 1px solid var(--border);
+ padding: 2rem 0;
+}
+.header-inner {
+ max-width: 760px;
+ margin: 0 auto;
+ padding: 0 2rem;
+ display: flex;
+ align-items: center;
+ gap: 1rem;
+}
+.logo-mark {
+ width: 40px; height: 40px;
+ background: var(--accent);
+ border-radius: 10px;
+ display: flex; align-items: center; justify-content: center;
+ flex-shrink: 0;
+}
+.logo-mark svg { width: 22px; height: 22px; fill: white; }
+.header-text h1 {
+ font-family: 'DM Serif Display', serif;
+ font-size: 1.35rem;
+ font-weight: 400;
+ color: var(--ink);
+ line-height: 1.2;
+}
+.header-text span {
+ font-size: 0.8rem;
+ color: var(--muted);
+ letter-spacing: 0.03em;
+}
+/* ── Hero band ── */
+.hero {
+ background: var(--accent);
+ color: white;
+ padding: 3.5rem 2rem;
+ text-align: center;
+}
+.hero h2 {
+ font-family: 'DM Serif Display', serif;
+ font-size: 2.4rem;
+ font-weight: 400;
+ line-height: 1.2;
+ margin-bottom: 0.75rem;
+}
+.hero p {
+ font-size: 0.95rem;
+ opacity: 0.82;
+ max-width: 520px;
+ margin: 0 auto;
+}
+.badge {
+ display: inline-block;
+ margin-top: 1.4rem;
+ background: rgba(255,255,255,0.15);
+ border: 1px solid rgba(255,255,255,0.3);
+ color: white;
+ font-size: 0.75rem;
+ letter-spacing: 0.08em;
+ text-transform: uppercase;
+ padding: 0.35rem 0.9rem;
+ border-radius: 999px;
+}
+/* ── Main ── */
+main {
+ max-width: 760px;
+ margin: 3rem auto;
+ padding: 0 2rem;
+}
+/* Summary card */
+.summary-card {
+ background: var(--surface);
+ border: 1px solid var(--border);
+ border-radius: 14px;
+ padding: 2rem;
+ margin-bottom: 2.5rem;
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+ gap: 1.5rem;
+}
+.summary-item { display: flex; flex-direction: column; gap: 0.3rem; }
+.summary-label {
+ font-size: 0.7rem;
+ text-transform: uppercase;
+ letter-spacing: 0.1em;
+ color: var(--muted);
+}
+.summary-value { font-size: 0.95rem; font-weight: 500; }
+.tag {
+ display: inline-block;
+ background: var(--tag-bg);
+ color: var(--tag-text);
+ font-size: 0.75rem;
+ font-weight: 500;
+ padding: 0.25rem 0.65rem;
+ border-radius: 6px;
+}
+.tag.green { background: #e6f9f0; color: #12815a; }
+/* Section */
+section { margin-bottom: 2.5rem; }
+.section-number {
+ font-size: 0.72rem;
+ text-transform: uppercase;
+ letter-spacing: 0.12em;
+ color: var(--accent);
+ font-weight: 500;
+ margin-bottom: 0.4rem;
+}
+h3 {
+ font-family: 'DM Serif Display', serif;
+ font-size: 1.35rem;
+ font-weight: 400;
+ color: var(--ink);
+ margin-bottom: 0.8rem;
+}
+p { color: #3a3a35; margin-bottom: 0.8rem; }
+p:last-child { margin-bottom: 0; }
+/* Highlight box */
+.highlight {
+ background: #e9f0fe;
+ border-left: 3px solid var(--accent);
+ border-radius: 0 10px 10px 0;
+ padding: 1rem 1.25rem;
+ margin: 1rem 0;
+ font-size: 0.93rem;
+ color: #1a3a8a;
+}
+/* Divider */
+hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+/* Contact card */
+.contact-card {
+ background: var(--surface);
+ border: 1px solid var(--border);
+ border-radius: 14px;
+ padding: 2rem;
+ display: flex;
+ align-items: center;
+ gap: 1.5rem;
+}
+.contact-icon {
+ width: 48px; height: 48px;
+ background: var(--tag-bg);
+ border-radius: 12px;
+ display: flex; align-items: center; justify-content: center;
+ flex-shrink: 0;
+}
+.contact-icon svg { width: 24px; height: 24px; fill: var(--accent); }
+.contact-info p { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.25rem; }
+.contact-info a {
+ color: var(--accent);
+ text-decoration: none;
+ font-weight: 500;
+ font-size: 0.95rem;
+}
+.contact-info a:hover { text-decoration: underline; }
+/* Footer */
+footer {
+ text-align: center;
+ padding: 2.5rem 1rem;
+ font-size: 0.78rem;
+ color: var(--muted);
+ border-top: 1px solid var(--border);
+}
+@media (max-width: 520px) {
+ .hero h2 { font-size: 1.8rem; }
+ .contact-card { flex-direction: column; align-items: flex-start; }
+}
+```
+</style>
+</head>
+<body>
+<!-- Header -->
+<header>
+<div class="header-inner">
+<div class="logo-mark">
+<svg viewBox="0 0 24 24"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h12v2H3v-2z"/></svg>
+</div>
+<div class="header-text">
+<h1>Custom Filter Panel</h1>
+<span>Power BI Visual by Pedro Silva</span>
+</div>
+</div>
+</header>
+<!-- Hero -->
+<div class="hero">
+<h2>Privacy Policy</h2>
+<p>Transparency about how the Custom Filter Panel handles your data when used in Microsoft Power BI.</p>
+<span class="badge">Effective date: April 9, 2026</span>
+</div>
+<!-- Main -->
+<main>
+<!-- Summary card -->
+<div class="summary-card">
+<div class="summary-item">
+<span class="summary-label">Product</span>
+<span class="summary-value">Custom Filter Panel</span>
+</div>
+<div class="summary-item">
+<span class="summary-label">Platform</span>
+<span class="summary-value">Microsoft Power BI</span>
+</div>
+<div class="summary-item">
+<span class="summary-label">Data Collection</span>
+<span class="tag green">None</span>
+</div>
+<div class="summary-item">
+<span class="summary-label">External Requests</span>
+<span class="tag green">None</span>
+</div>
+</div>
+<!-- 1 -->
+<section>
+<p class="section-number">01</p>
+<h3>Overview</h3>
+<p>
+     This Privacy Policy describes how the <strong>Custom Filter Panel</strong> Power BI visual ("the Visual"),
+     published by Pedro Silva ("we", "us", or "our"), handles information when installed and used
+     within Microsoft Power BI reports and dashboards.
+</p>
+<p>
+     We are committed to protecting your privacy. This document explains our data practices
+     in clear and simple terms.
+</p>
+</section>
+<hr/>
+<!-- 2 -->
+<section>
+<p class="section-number">02</p>
+<h3>Data Collection</h3>
+<div class="highlight">
+     The Custom Filter Panel does <strong>not collect, store, transmit, or share any personal data</strong>
+     or user information of any kind.
+</div>
+<p>
+     The Visual operates entirely within the local Power BI environment. It reads only the data
+     fields that you explicitly bind to it inside your report, and uses that data solely to render
+     the filter interface on screen. No data leaves your environment.
+</p>
+</section>
+<hr/>
+<!-- 3 -->
+<section>
+<p class="section-number">03</p>
+<h3>External Connections</h3>
+<p>
+     The Custom Filter Panel makes <strong>no network requests</strong> to external servers, APIs,
+     or third-party services. All processing is performed locally within the Power BI rendering engine
+     on the user's device or tenant.
+</p>
+<p>
+     No telemetry, analytics, crash reports, or usage statistics are sent to any server controlled
+     by us or any third party.
+</p>
+</section>
+<hr/>
+<!-- 4 -->
+<section>
+<p class="section-number">04</p>
+<h3>Data Storage</h3>
+<p>
+     The Visual does not persist any data beyond the current session. No cookies, local storage,
+     or caches are created. When the Power BI report is closed, no data related to the Visual
+     remains on the user's device.
+</p>
+</section>
+<hr/>
+<!-- 5 -->
+<section>
+<p class="section-number">05</p>
+<h3>Third-Party Services</h3>
+<p>
+     The Custom Filter Panel does not integrate with, depend on, or share data with any
+     third-party services, advertising networks, or analytics providers.
+</p>
+</section>
+<hr/>
+<!-- 6 -->
+<section>
+<p class="section-number">06</p>
+<h3>Microsoft Power BI Platform</h3>
+<p>
+     The Visual is distributed through Microsoft AppSource and operates within the Microsoft Power BI
+     platform. Your use of Power BI is governed by
+<a href="https://privacy.microsoft.com/en-us/privacystatement" target="_blank" rel="noopener">Microsoft's Privacy Statement</a>.
+     We have no control over and assume no responsibility for Microsoft's data practices.
+</p>
+</section>
+<hr/>
+<!-- 7 -->
+<section>
+<p class="section-number">07</p>
+<h3>Children's Privacy</h3>
+<p>
+     The Custom Filter Panel is a professional business intelligence tool not directed at children
+     under the age of 13. We do not knowingly collect any information from children.
+</p>
+</section>
+<hr/>
+<!-- 8 -->
+<section>
+<p class="section-number">08</p>
+<h3>Changes to This Policy</h3>
+<p>
+     We may update this Privacy Policy from time to time. Any changes will be reflected on this page
+     with an updated effective date. We encourage you to review this page periodically.
+</p>
+</section>
+<hr/>
+<!-- Contact -->
+<section>
+<p class="section-number">09</p>
+<h3>Contact</h3>
+<p>If you have any questions or concerns about this Privacy Policy, please reach out:</p>
+<div class="contact-card">
+<div class="contact-icon">
+<svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
+</div>
+<div class="contact-info">
+<p>Publisher — Pedro Silva</p>
+<a href="mailto:Pe123he@gmail.com">Pe123he@gmail.com</a>
+</div>
+</div>
+</section>
+</main>
+<footer>
+&copy; 2026 Pedro Silva · Custom Filter Panel · All rights reserved
+</footer>
+</body>
+</html>
