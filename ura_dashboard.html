@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Testes URA</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #2a2d36;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #667eea;
+        }
+
+        .kpi-card.success {
+            border-left-color: #10b981;
+        }
+
+        .kpi-card.warning {
+            border-left-color: #f59e0b;
+        }
+
+        .kpi-card.danger {
+            border-left-color: #ef4444;
+        }
+
+        .kpi-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #2a2d36;
+            margin-bottom: 5px;
+        }
+
+        .kpi-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .kpi-percent {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-grid.full {
+            grid-template-columns: 1fr;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .chart-card h3 {
+            color: #2a2d36;
+            margin-bottom: 20px;
+            font-size: 18px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-container canvas {
+            max-height: 300px;
+        }
+
+        .filters-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .filters-section h3 {
+            color: #2a2d36;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #2a2d36;
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #2a2d36;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .table-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .table-header h3 {
+            color: #2a2d36;
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f8f9fa;
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 1px solid #eee;
+        }
+
+        td {
+            padding: 12px;
+            font-size: 13px;
+            color: #2a2d36;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge.passed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge.failed {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge.priority-high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge.priority-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge.priority-low {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .insights-box {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #2a2d36;
+            line-height: 1.6;
+        }
+
+        .insights-box strong {
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📞 Dashboard de Testes URA</h1>
+            <p>Análise de testes de reconhecimento de voz - Sistema de Resposta Interativa</p>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filters-section">
+            <h3>🔍 Filtros</h3>
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label>Tópico</label>
+                    <select id="topicFilter">
+                        <option value="">Todos</option>
+                        <option value="2 Via">2 Via</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Resultado</label>
+                    <select id="resultFilter">
+                        <option value="">Todos</option>
+                        <option value="Passou">Passou ✓</option>
+                        <option value="Falhou">Falhou ✗</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Prioridade</label>
+                    <select id="priorityFilter">
+                        <option value="">Todos</option>
+                        <option value="Alta">Alta</option>
+                        <option value="Média">Média</option>
+                        <option value="Baixa">Baixa</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Responsável</label>
+                    <select id="responsibleFilter">
+                        <option value="">Todos</option>
+                        <option value="Débora">Débora</option>
+                    </select>
+                </div>
+            </div>
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="applyFilters()">Aplicar Filtros</button>
+                <button class="btn btn-secondary" onclick="resetFilters()">Resetar</button>
+            </div>
+        </div>
+
+        <!-- KPIs -->
+        <div class="kpi-grid" id="kpiContainer">
+            <div class="kpi-card success">
+                <div class="kpi-value" id="totalTests">2</div>
+                <div class="kpi-label">Total de Testes</div>
+                <div class="kpi-percent">Amostra inicial</div>
+            </div>
+            <div class="kpi-card success">
+                <div class="kpi-value" id="passedTests">2</div>
+                <div class="kpi-label">Testes Aprovados</div>
+                <div class="kpi-percent" id="passedPercent">100%</div>
+            </div>
+            <div class="kpi-card danger">
+                <div class="kpi-value" id="failedTests">0</div>
+                <div class="kpi-label">Testes Falhados</div>
+                <div class="kpi-percent" id="failedPercent">0%</div>
+            </div>
+            <div class="kpi-card warning">
+                <div class="kpi-value" id="uniquePhones">2</div>
+                <div class="kpi-label">Números Únicos</div>
+                <div class="kpi-percent">Contatos testados</div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="dashboard-grid">
+            <div class="chart-card">
+                <h3>📊 Resultado dos Testes</h3>
+                <div class="chart-container">
+                    <canvas id="resultsChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>⚡ Distribuição de Prioridade</h3>
+                <div class="chart-container">
+                    <canvas id="priorityChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Topics and Profiles -->
+        <div class="dashboard-grid">
+            <div class="chart-card">
+                <h3>🏷️ Tópicos Esperados</h3>
+                <div class="chart-container">
+                    <canvas id="topicsChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>👤 Perfis de Cliente</h3>
+                <div class="chart-container">
+                    <canvas id="profilesChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Insights -->
+        <div class="insights-box" id="insightsBox">
+            <strong>💡 Insights Principais:</strong><br>
+            • Taxa de sucesso: <span id="successRate">100%</span><br>
+            • Prioridade dominante: <span id="dominantPriority">Média</span><br>
+            • Responsável principal: <span id="mainResponsible">Débora</span><br>
+            • Total de variações testadas: <span id="totalVariations">2</span>
+        </div>
+
+        <!-- Detailed Table -->
+        <div class="data-table">
+            <div class="table-header">
+                <h3>📋 Detalhes dos Testes</h3>
+            </div>
+            <div class="search-box" style="padding: 20px; border-top: 1px solid #eee;">
+                <input type="text" id="tableSearch" placeholder="Buscar por ID, tópico, observações..." 
+                       onkeyup="filterTable()">
+            </div>
+            <table id="detailedTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tópico</th>
+                        <th>Subtipo</th>
+                        <th>Perfil</th>
+                        <th>Entonação</th>
+                        <th>Prioridade</th>
+                        <th>Resultado</th>
+                        <th>Responsável</th>
+                        <th>Observações</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Emotion Analysis -->
+        <div class="dashboard-grid full">
+            <div class="chart-card">
+                <h3>🎭 Análise de Entonação/Emoção</h3>
+                <div class="stats-row" id="emotionStats"></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Dashboard interativo de testes URA | Desenvolvido com Chart.js | Dados em tempo real</p>
+        </div>
+    </div>
+
+    <script>
+        // Sample data from the spreadsheet
+        const testData = [
+            {
+                id: 'CT-001',
+                topic: '2 Via',
+                phone: '21999011285',
+                subtype: 'Pedido direto',
+                profile: 'Calmo',
+                emotion: 'Neutra',
+                testPhrase: 'Quero a segunda via da minha fatura.',
+                foreignTerm: '',
+                variation: 'Fala clara',
+                expectedResponse: 'Direcionar para emissão ou envio da segunda via; confirmar competência quando necessário.',
+                priority: 'Média',
+                result: 'Passou',
+                observations: 'Enviou fatura e notificou fatura em atraso',
+                responsible: 'Débora'
+            },
+            {
+                id: 'CT-008',
+                topic: '2 Via',
+                phone: '61996186252',
+                subtype: 'Linha digitável',
+                profile: 'Técnico',
+                emotion: 'Neutra',
+                testPhrase: 'Quero a linha digitável da fatura.',
+                foreignTerm: '',
+                variation: 'Termo técnico',
+                expectedResponse: 'Direcionar para emissão ou envio da segunda via; confirmar competência quando necessário.',
+                priority: 'Média',
+                result: 'Passou',
+                observations: 'Passou mensagem sobre possiveis problemas na linha relacionado ao clima e enviou codigo e informou vencimento e faturas em atraso',
+                responsible: 'Débora'
+            }
+        ];
+
+        let filteredData = [...testData];
+        let charts = {};
+
+        function initializeDashboard() {
+            updateKPIs();
+            createCharts();
+            populateTable();
+            updateInsights();
+        }
+
+        function updateKPIs() {
+            const total = filteredData.length;
+            const passed = filteredData.filter(d => d.result === 'Passou').length;
+            const failed = total - passed;
+            const uniquePhones = new Set(filteredData.map(d => d.phone)).size;
+            const passedPercent = total > 0 ? Math.round((passed / total) * 100) : 0;
+            const failedPercent = total > 0 ? Math.round((failed / total) * 100) : 0;
+
+            document.getElementById('totalTests').textContent = total;
+            document.getElementById('passedTests').textContent = passed;
+            document.getElementById('failedTests').textContent = failed;
+            document.getElementById('uniquePhones').textContent = uniquePhones;
+            document.getElementById('passedPercent').textContent = passedPercent + '%';
+            document.getElementById('failedPercent').textContent = failedPercent + '%';
+        }
+
+        function createCharts() {
+            // Results Chart
+            const resultCounts = {
+                'Passou': filteredData.filter(d => d.result === 'Passou').length,
+                'Falhou': filteredData.filter(d => d.result === 'Falhou').length
+            };
+
+            if (charts.results) charts.results.destroy();
+            const ctx1 = document.getElementById('resultsChart').getContext('2d');
+            charts.results = new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Passou ✓', 'Falhou ✗'],
+                    datasets: [{
+                        data: [resultCounts['Passou'], resultCounts['Falhou']],
+                        backgroundColor: ['#10b981', '#ef4444'],
+                        borderColor: ['#10b981', '#ef4444'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Priority Chart
+            const priorityCounts = {
+                'Alta': filteredData.filter(d => d.priority === 'Alta').length,
+                'Média': filteredData.filter(d => d.priority === 'Média').length,
+                'Baixa': filteredData.filter(d => d.priority === 'Baixa').length
+            };
+
+            if (charts.priority) charts.priority.destroy();
+            const ctx2 = document.getElementById('priorityChart').getContext('2d');
+            charts.priority = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['Alta', 'Média', 'Baixa'],
+                    datasets: [{
+                        label: 'Quantidade',
+                        data: [priorityCounts['Alta'], priorityCounts['Média'], priorityCounts['Baixa']],
+                        backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6'],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: Math.max(...Object.values(priorityCounts), 1)
+                        }
+                    }
+                }
+            });
+
+            // Topics Chart
+            const topicCounts = {};
+            filteredData.forEach(d => {
+                topicCounts[d.topic] = (topicCounts[d.topic] || 0) + 1;
+            });
+
+            if (charts.topics) charts.topics.destroy();
+            const ctx3 = document.getElementById('topicsChart').getContext('2d');
+            charts.topics = new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(topicCounts),
+                    datasets: [{
+                        label: 'Quantidade de Testes',
+                        data: Object.values(topicCounts),
+                        backgroundColor: '#667eea',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Profiles Chart
+            const profileCounts = {};
+            filteredData.forEach(d => {
+                profileCounts[d.profile] = (profileCounts[d.profile] || 0) + 1;
+            });
+
+            if (charts.profiles) charts.profiles.destroy();
+            const ctx4 = document.getElementById('profilesChart').getContext('2d');
+            charts.profiles = new Chart(ctx4, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(profileCounts),
+                    datasets: [{
+                        data: Object.values(profileCounts),
+                        backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#4facfe'],
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function populateTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            filteredData.forEach(test => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td><strong>${test.id}</strong></td>
+                    <td>${test.topic}</td>
+                    <td>${test.subtype}</td>
+                    <td>${test.profile}</td>
+                    <td>${test.emotion}</td>
+                    <td><span class="badge priority-${test.priority.toLowerCase()}">${test.priority}</span></td>
+                    <td><span class="badge ${test.result === 'Passou' ? 'passed' : 'failed'}">${test.result}</span></td>
+                    <td>${test.responsible}</td>
+                    <td style="max-width: 200px; word-wrap: break-word;">${test.observations}</td>
+                `;
+            });
+        }
+
+        function filterTable() {
+            const searchTerm = document.getElementById('tableSearch').value.toLowerCase();
+            const rows = document.getElementById('tableBody').rows;
+            
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            }
+        }
+
+        function updateInsights() {
+            const total = filteredData.length;
+            const passed = filteredData.filter(d => d.result === 'Passou').length;
+            const successRate = total > 0 ? Math.round((passed / total) * 100) : 0;
+            
+            const priorityCounts = {};
+            filteredData.forEach(d => {
+                priorityCounts[d.priority] = (priorityCounts[d.priority] || 0) + 1;
+            });
+            const dominantPriority = Object.keys(priorityCounts).reduce((a, b) => 
+                priorityCounts[a] > priorityCounts[b] ? a : b, 'Não definido');
+
+            const responsibleCounts = {};
+            filteredData.forEach(d => {
+                responsibleCounts[d.responsible] = (responsibleCounts[d.responsible] || 0) + 1;
+            });
+            const mainResponsible = Object.keys(responsibleCounts).reduce((a, b) => 
+                responsibleCounts[a] > responsibleCounts[b] ? a : b, 'Não definido');
+
+            document.getElementById('successRate').textContent = successRate + '%';
+            document.getElementById('dominantPriority').textContent = dominantPriority;
+            document.getElementById('mainResponsible').textContent = mainResponsible;
+            document.getElementById('totalVariations').textContent = new Set(filteredData.map(d => d.variation)).size;
+
+            // Update emotion stats
+            const emotionCounts = {};
+            filteredData.forEach(d => {
+                emotionCounts[d.emotion] = (emotionCounts[d.emotion] || 0) + 1;
+            });
+
+            const emotionStats = document.getElementById('emotionStats');
+            emotionStats.innerHTML = Object.entries(emotionCounts).map(([emotion, count]) => `
+                <div class="stat-item">
+                    <div class="stat-number">${count}</div>
+                    <div class="stat-label">${emotion}</div>
+                </div>
+            `).join('');
+        }
+
+        function applyFilters() {
+            const topic = document.getElementById('topicFilter').value;
+            const result = document.getElementById('resultFilter').value;
+            const priority = document.getElementById('priorityFilter').value;
+            const responsible = document.getElementById('responsibleFilter').value;
+
+            filteredData = testData.filter(item => {
+                return (topic === '' || item.topic === topic) &&
+                       (result === '' || item.result === result) &&
+                       (priority === '' || item.priority === priority) &&
+                       (responsible === '' || item.responsible === responsible);
+            });
+
+            updateKPIs();
+            createCharts();
+            populateTable();
+            updateInsights();
+        }
+
+        function resetFilters() {
+            document.getElementById('topicFilter').value = '';
+            document.getElementById('resultFilter').value = '';
+            document.getElementById('priorityFilter').value = '';
+            document.getElementById('responsibleFilter').value = '';
+            document.getElementById('tableSearch').value = '';
+            
+            filteredData = [...testData];
+            updateKPIs();
+            createCharts();
+            populateTable();
+            updateInsights();
+        }
+
+        // Initialize on load
+        window.addEventListener('load', initializeDashboard);
+    </script>
+</body>
+</html>
